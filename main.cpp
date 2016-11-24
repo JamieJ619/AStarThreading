@@ -29,20 +29,14 @@ private:
 
 int main(int argc, char** argv){
 
-	DEBUG_MSG("Game Object Created");
 
 	Game* game = new Game();
 
 	//Adjust screen positions as needed
 	game->Initialize("DGPP Skelatol",300,100,800,600, SDL_WINDOW_INPUT_FOCUS);
-	DEBUG_MSG("Game Initialised");
 
 	game->LoadContent();
 
-	thread t1(&Process::run, Process((*(game)))); //Passing references
-	t1.detach(); //detaches from SDL mainline
-
-	DEBUG_MSG("Game Loop Starting......");
 	while(game->IsRunning())
 	{
 		game->HandleEvents();
@@ -50,7 +44,6 @@ int main(int argc, char** argv){
 		game->Render();
 	}
 
-	DEBUG_MSG("Calling Cleanup");
 	game->CleanUp();
 	game->UnloadContent();
 
