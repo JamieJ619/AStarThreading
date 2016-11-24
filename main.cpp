@@ -1,3 +1,4 @@
+#define main SDL_main
 #include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
@@ -33,7 +34,7 @@ int main(int argc, char** argv){
 	Game* game = new Game();
 
 	//Adjust screen positions as needed
-	game->Initialize("DGPP Skelatol",300,100,800,600, SDL_WINDOW_INPUT_FOCUS);
+	game->Initialize("A* Threading - Jamie Jackson", 300, 100, 800, 600, SDL_WINDOW_INPUT_FOCUS);
 
 	game->LoadContent();
 

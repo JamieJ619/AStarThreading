@@ -8,6 +8,7 @@ using namespace std;
 
 Game::Game() : m_running(false)
 {
+
 }
 
 Game::~Game()
@@ -51,13 +52,37 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 void Game::LoadContent()
 {
+	int x = 0;
+	int y = 0;
+
+	for(int i = 0; i < GRID_SIZE; i++)
+	{
+		m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i));
+		x++;
+		if (x == ROW_SIZE)
+		{
+			y++;
+			x = 0;
+		}
+	}
 }
 
 void Game::Render()
-{
+{	
 	SDL_RenderClear(m_p_Renderer);
-	
 
+	int x = 0;
+	int y = 0;
+	for (int i = 0; i < MAX_AREA; i++)
+	{
+		m_tiles[x + y]->render(m_p_Renderer);
+		x++;
+		if (x == MAX_TILES.x)
+		{
+			y += 1000;
+			x = 0;
+		}
+	}
 
 	SDL_RenderPresent(m_p_Renderer);
 }
@@ -104,8 +129,6 @@ bool Game::IsRunning()
 
 void Game::UnloadContent()
 {
-	//delete(m_p_Texture);
-	//m_p_Texture = NULL;
 }
 
 void Game::CleanUp()
