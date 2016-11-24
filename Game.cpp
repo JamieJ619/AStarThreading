@@ -6,7 +6,9 @@
 
 using namespace std;
 
-Game::Game() : m_running(false)
+Game::Game() 
+	: m_running(false),
+	  m_camera{0,0,800,600}
 {
 
 }
@@ -59,7 +61,7 @@ void Game::LoadContent()
 	{
 		m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i));
 		x++;
-		if (x == ROW_SIZE)
+		if (x == ROW_SIZE )
 		{
 			y++;
 			x = 0;
@@ -71,17 +73,27 @@ void Game::Render()
 {	
 	SDL_RenderClear(m_p_Renderer);
 
-	int x = 0;
-	int y = 0;
+	// X and Y positions of camera in tiles
+	int x = m_camera.x / TILE_SIZE;
+	int y = (m_camera.y / TILE_SIZE) * ROW_SIZE;
+
+	//	Tiles moved across
+	int xCounter = 0;
+	int lastNodeX = x + MAX_TILES.x - 1;
+
+	SDL_Point temp{ m_camera.x, m_camera.y };
+
 	for (int i = 0; i < MAX_AREA; i++)
 	{
-		m_tiles[x + y]->render(m_p_Renderer);
-		x++;
-		if (x == MAX_TILES.x)
+		if (xCounter > lastNodeX)
 		{
-			y += 1000;
-			x = 0;
+			y += ROW_SIZE;
+			xCounter = x;
 		}
+
+		int currNode = xCounter + y;
+		m_tiles[currNode]->render(m_p_Renderer, temp);
+		xCounter++;
 	}
 
 	SDL_RenderPresent(m_p_Renderer);
@@ -106,15 +118,26 @@ void Game::HandleEvents()
 					break;
 				case SDLK_UP:
 					DEBUG_MSG("Up Key Pressed");
+					//	Only move up when not at ypos 0
+					if (m_camera.y > 0)
+					{
+						m_camera.y -= TILE_SIZE;
+					}
 					break;
 				case SDLK_DOWN:
 					DEBUG_MSG("Down Key Pressed");
+					m_camera.y += TILE_SIZE;
 					break;
 				case SDLK_LEFT:
 					DEBUG_MSG("Left Key Pressed");
+					if (m_camera.y > 0)
+					{
+						m_camera.x -= TILE_SIZE;
+					}
 					break;
 				case SDLK_RIGHT:
 					DEBUG_MSG("Right Key Pressed");
+					m_camera.x += TILE_SIZE;
 					break;
 				default:
 					break;
@@ -136,4 +159,9 @@ void Game::CleanUp()
 	SDL_DestroyWindow(m_p_Window);
 	SDL_DestroyRenderer(m_p_Renderer);
 	SDL_Quit();
+}
+
+void Game::Camera()
+{
+
 }
