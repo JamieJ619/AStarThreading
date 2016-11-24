@@ -18,6 +18,7 @@ public:
 	void HandleEvents();
 	bool IsRunning();
 	void CleanUp();
+	void Camera();
 private:
 	bool m_running;
 	SDL_Window* m_p_Window;
@@ -33,7 +34,9 @@ private:
 	const int TILE_SIZE = 25;
 	const SDL_Point MAX_TILES = { 32, 24 };
 	const int MAX_AREA = 768;
-
 	std::vector<Tile*> m_tiles;
+
+	//	Camera
+	SDL_Rect m_camera;
 };
 #endif
