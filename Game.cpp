@@ -54,12 +54,14 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 void Game::LoadContent()
 {
+	SDL_Texture* tileTexture = TextureLoader::loadTexture("assets/tile.png", m_p_Renderer);
+
 	int x = 0;
 	int y = 0;
 
 	for(int i = 0; i < GRID_SIZE; i++)
 	{
-		m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i));
+		m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, tileTexture));
 		x++;
 		if (x == ROW_SIZE )
 		{
@@ -78,7 +80,7 @@ void Game::Render()
 	int y = (m_camera.y / TILE_SIZE) * ROW_SIZE;
 
 	//	Tiles moved across
-	int xCounter = 0;
+	int xCounter = x;
 	int lastNodeX = x + MAX_TILES.x - 1;
 
 	SDL_Point temp{ m_camera.x, m_camera.y };
@@ -123,21 +125,25 @@ void Game::HandleEvents()
 					{
 						m_camera.y -= TILE_SIZE;
 					}
+					cout << m_camera.y << endl;
 					break;
 				case SDLK_DOWN:
 					DEBUG_MSG("Down Key Pressed");
 					m_camera.y += TILE_SIZE;
+					cout << m_camera.y << endl;
 					break;
 				case SDLK_LEFT:
 					DEBUG_MSG("Left Key Pressed");
-					if (m_camera.y > 0)
+					if (m_camera.x > 0)
 					{
 						m_camera.x -= TILE_SIZE;
 					}
+					cout << m_camera.x << endl;
 					break;
 				case SDLK_RIGHT:
 					DEBUG_MSG("Right Key Pressed");
 					m_camera.x += TILE_SIZE;
+					cout << m_camera.x << endl;
 					break;
 				default:
 					break;

@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include "Tile.h"
 #include <vector>
-
+#include "TextureLoader.h"
 class Game
 {
 public:
