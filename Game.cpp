@@ -59,12 +59,26 @@ void Game::LoadContent()
 
 	int x = 0;
 	int y = 0;
+	int wallcounter = 1;
+	int count = 0;
 
 	for(int i = 0; i < GRID_SIZE; i++)
 	{
-		if (i % ROW_SIZE % 50 == 0 && i % ROW_SIZE != 0)
+		if (i % ROW_SIZE % 10 == 0 && i % ROW_SIZE != 0 && (y > 0 && y < ROW_SIZE - 1))
 		{
 			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, wallTexture));
+		}
+		else if(i % ROW_SIZE % 10 == 0 && i % ROW_SIZE != 0 && (y == 0 || y == ROW_SIZE -1))
+		{
+			count++;
+			if (count % 2 == 0)
+			{
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, tileTexture));
+			}
+			else
+			{
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, wallTexture));
+			}
 		}
 		else
 		{
