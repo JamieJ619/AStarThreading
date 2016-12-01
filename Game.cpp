@@ -8,7 +8,8 @@ using namespace std;
 
 Game::Game() 
 	: m_running(false),
-	  m_camera{0,0,800,600}
+	  m_camera{0,0,800,600},
+	  m_wallsPerTile(50)
 {
 
 }
@@ -55,19 +56,45 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 void Game::LoadContent()
 {
 	SDL_Texture* tileTexture = TextureLoader::loadTexture("assets/tile.png", m_p_Renderer);
+	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);
 
 	int x = 0;
 	int y = 0;
+	int count = 0;
 
 	for(int i = 0; i < GRID_SIZE; i++)
 	{
-		m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, tileTexture));
+		if (i % ROW_SIZE % m_wallsPerTile == 0 && i % ROW_SIZE != 0 && (y > 0 && y < ROW_SIZE - 1))
+		{
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, wallTexture));
+		}
+		else if(i % ROW_SIZE % m_wallsPerTile == 0 && i % ROW_SIZE != 0 && (y == 0 || y == ROW_SIZE -1))
+		{
+			if (i > ROW_SIZE && 2 % count != 0)
+			{
+				count = 1;
+			}
+			count++;
+			if (count % 2 == 0)
+			{
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, tileTexture));
+			}
+			else
+			{
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, wallTexture));
+			}
+		}
+		else
+		{
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, tileTexture));
+		}
 		x++;
-		if (x == ROW_SIZE )
+		if (x == ROW_SIZE)
 		{
 			y++;
 			x = 0;
 		}
+		
 	}
 }
 
@@ -123,13 +150,17 @@ void Game::HandleEvents()
 					//	Only move up when not at ypos 0
 					if (m_camera.y > 0)
 					{
-						m_camera.y -= TILE_SIZE;
+						//m_camera.y -= TILE_SIZE;
+						m_camera.y = 24000;
 					}
 					cout << m_camera.y << endl;
 					break;
 				case SDLK_DOWN:
 					DEBUG_MSG("Down Key Pressed");
-					m_camera.y += TILE_SIZE;
+					if (m_camera.y < 25000 - 600)
+					{
+						m_camera.y += TILE_SIZE;
+					}
 					cout << m_camera.y << endl;
 					break;
 				case SDLK_LEFT:
@@ -142,7 +173,10 @@ void Game::HandleEvents()
 					break;
 				case SDLK_RIGHT:
 					DEBUG_MSG("Right Key Pressed");
-					m_camera.x += TILE_SIZE;
+					if (m_camera.x < 25000 - 800)
+					{
+						m_camera.x += TILE_SIZE;
+					}
 					cout << m_camera.x << endl;
 					break;
 				default:

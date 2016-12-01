@@ -35,6 +35,7 @@ private:
 	const SDL_Point MAX_TILES = { 32, 24 };
 	const int MAX_AREA = 768;
 	std::vector<Tile*> m_tiles;
+	int m_wallsPerTile;
 
 	//	Camera
 	SDL_Rect m_camera;
