@@ -9,7 +9,8 @@ using namespace std;
 Game::Game() 
 	: m_running(false),
 	  m_camera{0,0,800,600},
-	  m_wallsPerTile(50)
+	  m_wallsPerTile(50),
+	  m_aStar(ROW_SIZE, GRID_SIZE)
 {
 
 }
@@ -55,8 +56,10 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 void Game::LoadContent()
 {
-	SDL_Texture* tileTexture = TextureLoader::loadTexture("assets/tile.png", m_p_Renderer);
-	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);
+	/*SDL_Texture* tileTexture = TextureLoader::loadTexture("assets/tile.png", m_p_Renderer);
+	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);*/
+
+	m_tileAtlas = TextureLoader::loadTexture("assets/TileAtlas.png", m_p_Renderer);
 
 	int x = 0;
 	int y = 0;
@@ -66,7 +69,7 @@ void Game::LoadContent()
 	{
 		if (i % ROW_SIZE % m_wallsPerTile == 0 && i % ROW_SIZE != 0 && (y > 0 && y < ROW_SIZE - 1))
 		{
-			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, wallTexture));
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
 		}
 		else if(i % ROW_SIZE % m_wallsPerTile == 0 && i % ROW_SIZE != 0 && (y == 0 || y == ROW_SIZE -1))
 		{
@@ -77,16 +80,16 @@ void Game::LoadContent()
 			count++;
 			if (count % 2 == 0)
 			{
-				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, tileTexture));
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
 			}
 			else
 			{
-				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, wallTexture));
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
 			}
 		}
 		else
 		{
-			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, tileTexture));
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
 		}
 		x++;
 		if (x == ROW_SIZE)
@@ -130,6 +133,12 @@ void Game::Render()
 
 void Game::Update()
 {
+
+	std::vector<SDL_Point> temp = m_aStar.search(&m_tiles, 0, 102);
+	for (int i = 0; i < temp.size(); i++)
+	{
+		std::cout << temp[i].x << " " << temp[i].y << std::endl;
+	}
 }
 
 void Game::HandleEvents()

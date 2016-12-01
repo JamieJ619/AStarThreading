@@ -5,6 +5,8 @@
 #include "Tile.h"
 #include <vector>
 #include "TextureLoader.h"
+#include "AStar.h"
+
 class Game
 {
 public:
@@ -37,7 +39,11 @@ private:
 	std::vector<Tile*> m_tiles;
 	int m_wallsPerTile;
 
+	AStar m_aStar;
+
+
 	//	Camera
 	SDL_Rect m_camera;
+	SDL_Texture* m_tileAtlas;
 };
 #endif
