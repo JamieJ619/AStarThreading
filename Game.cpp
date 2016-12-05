@@ -154,13 +154,21 @@ void Game::HandleEvents()
 				case SDLK_ESCAPE:
 					m_running = false;
 					break;
+				case SDLK_1:
+						m_camera.y = 24000;
+					cout << m_camera.y << endl;
+					break;
+				case SDLK_2:
+						m_camera.y = 0;
+					cout << m_camera.y << endl;
+					break;
 				case SDLK_UP:
 					DEBUG_MSG("Up Key Pressed");
 					//	Only move up when not at ypos 0
 					if (m_camera.y > 0)
 					{
-						//m_camera.y -= TILE_SIZE;
-						m_camera.y = 24000;
+						m_camera.y -= TILE_SIZE;
+						//m_camera.y = 24000;
 					}
 					cout << m_camera.y << endl;
 					break;
