@@ -10,7 +10,8 @@ Game::Game()
 	: m_running(false),
 	  m_camera{0,0,800,600},
 	  m_wallsPerTile(50),
-	  m_aStar(ROW_SIZE, GRID_SIZE)
+	  m_aStar(ROW_SIZE, GRID_SIZE),
+	  m_runAstar(true)
 {
 
 }
@@ -60,6 +61,10 @@ void Game::LoadContent()
 	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);*/
 
 	m_tileAtlas = TextureLoader::loadTexture("assets/TileAtlas.png", m_p_Renderer);
+	for (int i = 0; i < 5; i++)
+	{
+		m_enemy.push_back(new Enemy(0 + i*25, 0, 25, 25, m_tileAtlas, 4));
+	}
 
 	int x = 0;
 	int y = 0;
@@ -127,18 +132,21 @@ void Game::Render()
 		m_tiles[currNode]->render(m_p_Renderer, temp);
 		xCounter++;
 	}
-
+	for (int i = 0; i < 5; i++)
+	{
+		m_enemy[i]->render(m_p_Renderer, temp);
+	}
 	SDL_RenderPresent(m_p_Renderer);
 }
 
 void Game::Update()
 {
-
-	std::vector<SDL_Point> temp = m_aStar.search(&m_tiles, 0, 102);
-	for (int i = 0; i < temp.size(); i++)
+	if (m_runAstar)
 	{
-		std::cout << temp[i].x << " " << temp[i].y << std::endl;
+		std::vector<SDL_Point> temp = m_aStar.search(&m_tiles, 0, 102);
+		m_runAstar = false;
 	}
+
 }
 
 void Game::HandleEvents()

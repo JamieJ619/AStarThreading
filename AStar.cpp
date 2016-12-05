@@ -39,16 +39,20 @@ int AStar::calculateNeighbourIndex(Tile * p_currNode, int p_id)
 
 std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int endID)
 {
+	std::map<Tile*, Data> m_tileData;
+
+
 	Tile* start = tiles->at(startID);
 	Tile* goal = tiles->at(endID);
 
 	if (start != 0 && goal != 0)
 	{
 		std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, NodeSearchCostComparer> openset;
-		start->setGCost(0);
-		start->setFCost(calculateHeuristic(start, goal));
-		start->setOpen(true);
-		openset.push(std::pair<int, int>(start->getFCost(), startID));
+		m_tileData[start].m_gCost = 0;
+		m_tileData[start].m_fCost = calculateHeuristic(start, goal);
+		m_tileData[start].m_open = true;
+
+		openset.push(std::pair<int, int>(m_tileData[start].m_fCost, startID));
 
 		int previousCost = 0;
 
@@ -58,10 +62,10 @@ std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int
 			openset.pop();
 			if (current == goal)
 			{
-				return createPath(goal, start);
+				return createPath(goal, start, &m_tileData);
 			}
-			current->setOpen(false);
-			current->setClose(true);
+			m_tileData[current].m_open = false;
+			m_tileData[current].m_close = true;
 
 			for (int i = 0; i < 4; i++)
 			{
@@ -77,26 +81,26 @@ std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int
 					neighbour = tiles->at(neighbourIndex);
 				}
 
-				if (neighbour == 0 || neighbour->getClose()
-					|| neighbour == current->getPrevTile()
+				if (neighbour == 0 || m_tileData[neighbour].m_close
+					|| neighbour == m_tileData[current].m_previous
 					|| neighbour->getIsWall() == true)
 				{
 					continue;
 				}
-				int tenativeGCost = current->getGCost() + COST;
-				if (tenativeGCost <= neighbour->getGCost())
+				int tenativeGCost = m_tileData[current].m_gCost + COST;
+				if (tenativeGCost <= m_tileData[neighbour].m_gCost)
 				{
-					neighbour->setPrevTile(current);
-					neighbour->setGCost(tenativeGCost);
-					neighbour->setFCost(neighbour->getGCost() + calculateHeuristic(neighbour, goal));
+					m_tileData[neighbour].m_previous = current;
+					m_tileData[neighbour].m_gCost = tenativeGCost;
+					m_tileData[neighbour].m_fCost = (m_tileData[neighbour].m_gCost + calculateHeuristic(neighbour, goal));
 				}
 
-				if (neighbour->getOpen() == false)
+				if (m_tileData[neighbour].m_open == false)
 				{
 					// TILE CHECKED
 					neighbour->setTileTypeID(3);
-					neighbour->setOpen(true);
-					openset.push(std::pair<int, int>(neighbour->getFCost(), neighbourIndex));
+					m_tileData[neighbour].m_open = true;
+					openset.push(std::pair<int, int>(m_tileData[neighbour].m_fCost, neighbourIndex));
 				}
 				previousCost = tenativeGCost;
 			}
@@ -107,10 +111,10 @@ std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int
 	return std::vector<SDL_Point>();
 }
 
-std::vector<SDL_Point> AStar::createPath(Tile * goal, Tile * start)
+std::vector<SDL_Point> AStar::createPath(Tile * goal, Tile * start, std::map<Tile*, Data> * tileData)
 {
 	std::vector<SDL_Point> path;
-	for (Tile* previous = goal; previous->getPrevTile() != 0; previous = previous->getPrevTile())
+	for (Tile* previous = goal; previous != 0; previous = tileData->at(previous).m_previous)
 	{
 		previous->setTileTypeID(2);
 		path.push_back(previous->getPosition());

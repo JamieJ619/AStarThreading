@@ -4,12 +4,7 @@
 
 
 Tile::Tile(int p_x, int p_y, int p_width, int p_height, int p_id, SDL_Texture* p_texture, bool p_isWall, int p_tileTypeID)
-	:m_open(false),
-	m_close(false),
-	m_tileID(p_id),
-	m_fCost(std::numeric_limits<int>::max()),
-	m_gCost(std::numeric_limits<int>::max()),
-	m_previousTile(NULL),
+	: m_tileID(p_id),
 	m_isWall(p_isWall),
 	m_tileTypeID(p_tileTypeID)
 {
@@ -37,24 +32,6 @@ void Tile::setColor(SDL_Renderer * p_renderer)
 	SDL_RenderCopy(p_renderer, m_texture, NULL, &m_tileRect);
 }
 
-void Tile::setOpen(bool p_open)
-{
-	m_open = p_open;
-}
-bool Tile::getOpen()
-{
-	return m_open;
-}
-
-void Tile::setClose(bool p_close)
-{
-	m_close = p_close;
-}
-bool Tile::getClose()
-{
-	return m_close;
-}
-
 void Tile::setID(bool p_id)
 {
 	m_tileID = p_id;
@@ -62,34 +39,6 @@ void Tile::setID(bool p_id)
 int Tile::getID()
 {
 	return m_tileID;
-}
-
-void Tile::setFCost(int p_fCost)
-{
-	m_fCost = p_fCost;
-}
-int Tile::getFCost()
-{
-	return m_fCost;
-}
-
-void Tile::setGCost(int p_gCost)
-{
-	m_gCost = p_gCost;
-}
-int Tile::getGCost()
-{
-	return m_gCost;
-}
-
-void Tile::setPrevTile(Tile * tile)
-{
-	m_previousTile = tile;
-}
-
-Tile * Tile::getPrevTile()
-{
-	return m_previousTile;
 }
 
 void Tile::setIsWall(bool isWall)

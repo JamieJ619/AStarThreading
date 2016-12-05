@@ -1,9 +1,27 @@
 #pragma once
 #include "Tile.h"
 #include <vector>
+#include <map>
 
 class AStar
 {
+	struct Data
+	{
+		bool m_open;
+		bool m_close;
+		Tile * m_previous;
+		int m_fCost;
+		int m_gCost;
+		Data(bool open = false, bool close = false, Tile * previous = 0, int fCost = std::numeric_limits<int>::max(), int gCost = std::numeric_limits<int>::max())
+		: m_open(open)
+		, m_close(close)
+		, m_previous(previous)
+		, m_fCost(fCost)
+		, m_gCost(gCost)
+		{
+			
+		}
+	};
 public:
 	AStar(int rowSize, int numOfTiles);
 	~AStar();
@@ -14,7 +32,7 @@ public:
 
 
 private:
-	std::vector<SDL_Point> createPath(Tile* start, Tile* goal);
+	std::vector<SDL_Point> createPath(Tile* start, Tile* goal, std::map<Tile*, Data> * tileData);
 	int m_neighbourTile[4];
 	int m_numOfTiles;
 	int m_rowSize;

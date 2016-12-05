@@ -6,6 +6,7 @@
 #include <vector>
 #include "TextureLoader.h"
 #include "AStar.h"
+#include "Enemy.h"
 
 class Game
 {
@@ -40,7 +41,9 @@ private:
 	int m_wallsPerTile;
 
 	AStar m_aStar;
+	bool m_runAstar;
 
+	std::vector<Enemy*> m_enemy;
 
 	//	Camera
 	SDL_Rect m_camera;
