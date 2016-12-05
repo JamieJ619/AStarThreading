@@ -42,8 +42,10 @@ private:
 
 	AStar m_aStar;
 	bool m_runAstar;
+	
 
 	std::vector<Enemy*> m_enemy;
+	int NUM_OF_ENEMIES = 5;
 
 	//	Camera
 	SDL_Rect m_camera;

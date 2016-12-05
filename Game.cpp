@@ -61,9 +61,15 @@ void Game::LoadContent()
 	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);*/
 
 	m_tileAtlas = TextureLoader::loadTexture("assets/TileAtlas.png", m_p_Renderer);
-	for (int i = 0; i < 5; i++)
+	int enemyY = 0;
+
+	for (int i = 0; i < NUM_OF_ENEMIES; i++)
 	{
-		m_enemy.push_back(new Enemy(0 + i*25, 0, 25, 25, m_tileAtlas, 4));
+		if (i > 50)
+		{
+			enemyY++;
+		}
+		m_enemy.push_back(new Enemy((ROW_SIZE * TILE_SIZE) - i * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 	}
 
 	int x = 0;
@@ -121,6 +127,7 @@ void Game::Render()
 	SDL_Point temp{ m_camera.x, m_camera.y };
 
 	for (int i = 0; i < MAX_AREA; i++)
+
 	{
 		if (xCounter > lastNodeX)
 		{
@@ -132,7 +139,7 @@ void Game::Render()
 		m_tiles[currNode]->render(m_p_Renderer, temp);
 		xCounter++;
 	}
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < NUM_OF_ENEMIES; i++)
 	{
 		m_enemy[i]->render(m_p_Renderer, temp);
 	}
@@ -162,13 +169,33 @@ void Game::HandleEvents()
 				case SDLK_ESCAPE:
 					m_running = false;
 					break;
-				case SDLK_1:
-						m_camera.y = 24000;
+				case SDLK_w:
+					if (m_camera.y > 1000)
+					{
+						m_camera.y -= 1000;
+					}
 					cout << m_camera.y << endl;
 					break;
-				case SDLK_2:
-						m_camera.y = 0;
+				case SDLK_s:
+					if (m_camera.y < 25000 - 1600)
+					{
+						m_camera.y += 1000;
+					}
 					cout << m_camera.y << endl;
+					break;
+				case SDLK_a:
+					if (m_camera.x > 1000)
+					{
+						m_camera.x -= 1000;
+					}
+					cout << m_camera.x << endl;
+					break;
+				case SDLK_d:
+					if (m_camera.x < 25000 - 1800)
+					{
+						m_camera.x += 1000;
+					}
+					cout << m_camera.x << endl;
 					break;
 				case SDLK_UP:
 					DEBUG_MSG("Up Key Pressed");
