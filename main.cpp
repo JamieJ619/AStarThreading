@@ -8,7 +8,7 @@
 
 using namespace std;
 
-//	Jamie Jackson - C00182414 - Date Modified: 28/11/2016
+//	Jamie Jackson - C00182414 - Date Modified: 
 class Process
 {
 public:

@@ -9,7 +9,9 @@ using namespace std;
 Game::Game() 
 	: m_running(false),
 	  m_camera{0,0,800,600},
-	  m_wallsPerTile(50)
+	  m_wallsPerTile(50),
+	  m_aStar(ROW_SIZE, GRID_SIZE),
+	  m_runAstar(true)
 {
 
 }
@@ -55,8 +57,14 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 void Game::LoadContent()
 {
-	SDL_Texture* tileTexture = TextureLoader::loadTexture("assets/tile.png", m_p_Renderer);
-	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);
+	/*SDL_Texture* tileTexture = TextureLoader::loadTexture("assets/tile.png", m_p_Renderer);
+	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);*/
+
+	m_tileAtlas = TextureLoader::loadTexture("assets/TileAtlas.png", m_p_Renderer);
+	for (int i = 0; i < 5; i++)
+	{
+		m_enemy.push_back(new Enemy(0 + i*25, 0, 25, 25, m_tileAtlas, 4));
+	}
 
 	int x = 0;
 	int y = 0;
@@ -66,7 +74,7 @@ void Game::LoadContent()
 	{
 		if (i % ROW_SIZE % m_wallsPerTile == 0 && i % ROW_SIZE != 0 && (y > 0 && y < ROW_SIZE - 1))
 		{
-			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, wallTexture));
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
 		}
 		else if(i % ROW_SIZE % m_wallsPerTile == 0 && i % ROW_SIZE != 0 && (y == 0 || y == ROW_SIZE -1))
 		{
@@ -77,16 +85,16 @@ void Game::LoadContent()
 			count++;
 			if (count % 2 == 0)
 			{
-				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, tileTexture));
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
 			}
 			else
 			{
-				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, wallTexture));
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
 			}
 		}
 		else
 		{
-			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, tileTexture));
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
 		}
 		x++;
 		if (x == ROW_SIZE)
@@ -124,12 +132,21 @@ void Game::Render()
 		m_tiles[currNode]->render(m_p_Renderer, temp);
 		xCounter++;
 	}
-
+	for (int i = 0; i < 5; i++)
+	{
+		m_enemy[i]->render(m_p_Renderer, temp);
+	}
 	SDL_RenderPresent(m_p_Renderer);
 }
 
 void Game::Update()
 {
+	if (m_runAstar)
+	{
+		std::vector<SDL_Point> temp = m_aStar.search(&m_tiles, 0, 102);
+		m_runAstar = false;
+	}
+
 }
 
 void Game::HandleEvents()
@@ -145,13 +162,21 @@ void Game::HandleEvents()
 				case SDLK_ESCAPE:
 					m_running = false;
 					break;
+				case SDLK_1:
+						m_camera.y = 24000;
+					cout << m_camera.y << endl;
+					break;
+				case SDLK_2:
+						m_camera.y = 0;
+					cout << m_camera.y << endl;
+					break;
 				case SDLK_UP:
 					DEBUG_MSG("Up Key Pressed");
 					//	Only move up when not at ypos 0
 					if (m_camera.y > 0)
 					{
-						//m_camera.y -= TILE_SIZE;
-						m_camera.y = 24000;
+						m_camera.y -= TILE_SIZE;
+						//m_camera.y = 24000;
 					}
 					cout << m_camera.y << endl;
 					break;
