@@ -17,3 +17,14 @@ void Enemy::render(SDL_Renderer * p_renderer, SDL_Point p_cameraPosition)
 	SDL_Rect source{ m_tileTypeID * 100, 0, 100, 100 };
 	SDL_RenderCopy(p_renderer, m_texture, &source, &temp);
 }
+
+void Enemy::setPath(std::vector<SDL_Point> p_path)
+{
+	m_path = p_path;
+}
+
+int Enemy::getTileIndex()
+{
+	m_tileIndex = m_tileRect.x / 25 + (m_tileRect.y / 25) * 1000;
+	return m_tileIndex;
+}

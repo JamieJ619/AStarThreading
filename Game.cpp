@@ -57,20 +57,26 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 void Game::LoadContent()
 {
-	/*SDL_Texture* tileTexture = TextureLoader::loadTexture("assets/tile.png", m_p_Renderer);
-	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);*/
-
 	m_tileAtlas = TextureLoader::loadTexture("assets/TileAtlas.png", m_p_Renderer);
 	int enemyY = 0;
+	int enemyX = 0;
 
-	for (int i = 0; i < NUM_OF_ENEMIES; i++)
+	/*for (int i = 0; i < NUM_OF_ENEMIES; i++)
 	{
-		if (i > 50)
+		if (enemyX > GAP_BETWEEN_WALLS)
 		{
+			enemyX = 0;
 			enemyY++;
 		}
-		m_enemy.push_back(new Enemy((ROW_SIZE * TILE_SIZE) - i * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
-	}
+		if (enemyY > 0)
+		{
+			int x = 0;
+		}
+		m_enemy.push_back(new Enemy((ROW_SIZE * TILE_SIZE) - enemyX * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
+		enemyX++;
+	}*/
+
+	m_enemy.push_back(new Enemy(75, 250, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 
 	int x = 0;
 	int y = 0;
@@ -150,10 +156,14 @@ void Game::Update()
 {
 	if (m_runAstar)
 	{
-		std::vector<SDL_Point> temp = m_aStar.search(&m_tiles, 0, 102);
+		for (int i = 0; i < NUM_OF_ENEMIES; i++)
+		{
+			m_enemy[i]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[i]->getTileIndex()));
+		}
 		m_runAstar = false;
+		/*int x = m_enemy[0]->getTileIndex();
+		m_enemy[0]->setPath(m_aStar.search(&m_tiles, 0, m_enemy[0]->getTileIndex()));*/
 	}
-
 }
 
 void Game::HandleEvents()

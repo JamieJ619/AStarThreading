@@ -19,8 +19,12 @@ AStar::~AStar()
 
 int AStar::calculateHeuristic(Tile * p_prevNode, Tile * p_currNode)
 {
+	
+	//return abs((p_currNode->getPosition().x - p_prevNode->getPosition().x) + (p_currNode->getPosition().y - p_prevNode->getPosition().y));
 	int x = abs((p_currNode->getPosition().x - p_prevNode->getPosition().x) + (p_currNode->getPosition().y - p_prevNode->getPosition().y));
-	return x;
+	int y = abs((p_currNode->getPosition().x - p_prevNode->getPosition().x) + abs(p_currNode->getPosition().y - p_prevNode->getPosition().y));
+
+	return y;
 }
 
 int AStar::calculateNeighbourIndex(Tile * p_currNode, int p_id)
@@ -83,7 +87,7 @@ std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int
 
 				if (neighbour == 0 || m_tileData[neighbour].m_close
 					|| neighbour == m_tileData[current].m_previous
-					|| neighbour->getIsWall() == true)
+					|| neighbour->getIsWall())
 				{
 					continue;
 				}
@@ -92,7 +96,7 @@ std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int
 				{
 					m_tileData[neighbour].m_previous = current;
 					m_tileData[neighbour].m_gCost = tenativeGCost;
-					m_tileData[neighbour].m_fCost = (m_tileData[neighbour].m_gCost + calculateHeuristic(neighbour, goal));
+					m_tileData[neighbour].m_fCost = m_tileData[neighbour].m_gCost + calculateHeuristic(neighbour, goal);
 				}
 
 				if (m_tileData[neighbour].m_open == false)
