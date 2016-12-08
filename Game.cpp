@@ -61,7 +61,7 @@ void Game::LoadContent()
 	int enemyY = 0;
 	int enemyX = 0;
 
-	/*for (int i = 0; i < NUM_OF_ENEMIES; i++)
+	for (int i = 0; i < NUM_OF_ENEMIES; i++)
 	{
 		if (enemyX > GAP_BETWEEN_WALLS)
 		{
@@ -74,9 +74,9 @@ void Game::LoadContent()
 		}
 		m_enemy.push_back(new Enemy((ROW_SIZE * TILE_SIZE) - enemyX * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 		enemyX++;
-	}*/
+	}
 
-	m_enemy.push_back(new Enemy(75, 250, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
+	//m_enemy.push_back(new Enemy(75, 250, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 
 	int x = 0;
 	int y = 0;
@@ -108,6 +108,7 @@ void Game::LoadContent()
 		{
 			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
 		}
+
 		x++;
 		if (x == ROW_SIZE)
 		{
