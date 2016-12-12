@@ -57,14 +57,26 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 void Game::LoadContent()
 {
-	/*SDL_Texture* tileTexture = TextureLoader::loadTexture("assets/tile.png", m_p_Renderer);
-	SDL_Texture* wallTexture = TextureLoader::loadTexture("assets/wall.png", m_p_Renderer);*/
-
 	m_tileAtlas = TextureLoader::loadTexture("assets/TileAtlas.png", m_p_Renderer);
-	for (int i = 0; i < 5; i++)
+	int enemyY = 0;
+	int enemyX = 0;
+
+	for (int i = 0; i < NUM_OF_ENEMIES; i++)
 	{
-		m_enemy.push_back(new Enemy(0 + i*25, 0, 25, 25, m_tileAtlas, 4));
+		if (enemyX > GAP_BETWEEN_WALLS)
+		{
+			enemyX = 0;
+			enemyY++;
+		}
+		if (enemyY > 0)
+		{
+			int x = 0;
+		}
+		m_enemy.push_back(new Enemy((ROW_SIZE * TILE_SIZE) - enemyX * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
+		enemyX++;
 	}
+
+	//m_enemy.push_back(new Enemy(75, 250, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 
 	int x = 0;
 	int y = 0;
@@ -96,6 +108,7 @@ void Game::LoadContent()
 		{
 			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
 		}
+
 		x++;
 		if (x == ROW_SIZE)
 		{
@@ -121,6 +134,7 @@ void Game::Render()
 	SDL_Point temp{ m_camera.x, m_camera.y };
 
 	for (int i = 0; i < MAX_AREA; i++)
+
 	{
 		if (xCounter > lastNodeX)
 		{
@@ -132,7 +146,7 @@ void Game::Render()
 		m_tiles[currNode]->render(m_p_Renderer, temp);
 		xCounter++;
 	}
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < NUM_OF_ENEMIES; i++)
 	{
 		m_enemy[i]->render(m_p_Renderer, temp);
 	}
@@ -143,10 +157,14 @@ void Game::Update()
 {
 	if (m_runAstar)
 	{
-		std::vector<SDL_Point> temp = m_aStar.search(&m_tiles, 0, 102);
+		for (int i = 0; i < NUM_OF_ENEMIES; i++)
+		{
+			m_enemy[i]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[i]->getTileIndex()));
+		}
 		m_runAstar = false;
+		/*int x = m_enemy[0]->getTileIndex();
+		m_enemy[0]->setPath(m_aStar.search(&m_tiles, 0, m_enemy[0]->getTileIndex()));*/
 	}
-
 }
 
 void Game::HandleEvents()
@@ -162,13 +180,33 @@ void Game::HandleEvents()
 				case SDLK_ESCAPE:
 					m_running = false;
 					break;
-				case SDLK_1:
-						m_camera.y = 24000;
+				case SDLK_w:
+					if (m_camera.y > 1000)
+					{
+						m_camera.y -= 1000;
+					}
 					cout << m_camera.y << endl;
 					break;
-				case SDLK_2:
-						m_camera.y = 0;
+				case SDLK_s:
+					if (m_camera.y < 25000 - 1600)
+					{
+						m_camera.y += 1000;
+					}
 					cout << m_camera.y << endl;
+					break;
+				case SDLK_a:
+					if (m_camera.x > 1000)
+					{
+						m_camera.x -= 1000;
+					}
+					cout << m_camera.x << endl;
+					break;
+				case SDLK_d:
+					if (m_camera.x < 25000 - 1800)
+					{
+						m_camera.x += 1000;
+					}
+					cout << m_camera.x << endl;
 					break;
 				case SDLK_UP:
 					DEBUG_MSG("Up Key Pressed");

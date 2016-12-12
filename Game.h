@@ -39,11 +39,14 @@ private:
 	const int MAX_AREA = 768;
 	std::vector<Tile*> m_tiles;
 	int m_wallsPerTile;
+	const int GAP_BETWEEN_WALLS = 49;
 
 	AStar m_aStar;
 	bool m_runAstar;
+	
 
 	std::vector<Enemy*> m_enemy;
+	int NUM_OF_ENEMIES = 1;
 
 	//	Camera
 	SDL_Rect m_camera;

@@ -12,7 +12,7 @@ class AStar
 		Tile * m_previous;
 		int m_fCost;
 		int m_gCost;
-		Data(bool open = false, bool close = false, Tile * previous = 0, int fCost = std::numeric_limits<int>::max(), int gCost = std::numeric_limits<int>::max())
+		Data(bool open = false, bool close = false, int fCost = std::numeric_limits<int>::max(),  int gCost = std::numeric_limits<int>::max(), Tile * previous = 0)
 		: m_open(open)
 		, m_close(close)
 		, m_previous(previous)
@@ -36,7 +36,7 @@ private:
 	int m_neighbourTile[4];
 	int m_numOfTiles;
 	int m_rowSize;
-	const int COST = 1;
+	const int COST = 25;
 
 	class NodeSearchCostComparer 
 	{

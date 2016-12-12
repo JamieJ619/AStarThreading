@@ -17,10 +17,13 @@ AStar::~AStar()
 {
 }
 
-int AStar::calculateHeuristic(Tile * p_prevNode, Tile * p_currNode)
+int AStar::calculateHeuristic(Tile * p_goalTile, Tile * p_currTile)
 {
-	int x = abs((p_currNode->getPosition().x - p_prevNode->getPosition().x) + (p_currNode->getPosition().y - p_prevNode->getPosition().y));
-	return x;
+
+	int xDiff = std::max(p_goalTile->getPosition().x - p_currTile->getPosition().x, p_currTile->getPosition().x - p_goalTile->getPosition().x);
+	int yDiff = std::max(p_goalTile->getPosition().y - p_currTile->getPosition().y, p_currTile->getPosition().y - p_goalTile->getPosition().y);
+
+	return xDiff + yDiff;
 }
 
 int AStar::calculateNeighbourIndex(Tile * p_currNode, int p_id)
@@ -83,7 +86,7 @@ std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int
 
 				if (neighbour == 0 || m_tileData[neighbour].m_close
 					|| neighbour == m_tileData[current].m_previous
-					|| neighbour->getIsWall() == true)
+					|| neighbour->getIsWall())
 				{
 					continue;
 				}
@@ -92,7 +95,7 @@ std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int
 				{
 					m_tileData[neighbour].m_previous = current;
 					m_tileData[neighbour].m_gCost = tenativeGCost;
-					m_tileData[neighbour].m_fCost = (m_tileData[neighbour].m_gCost + calculateHeuristic(neighbour, goal));
+					m_tileData[neighbour].m_fCost = (m_tileData[neighbour].m_gCost / 2) + calculateHeuristic(neighbour, goal);
 				}
 
 				if (m_tileData[neighbour].m_open == false)
@@ -104,8 +107,6 @@ std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int
 				}
 				previousCost = tenativeGCost;
 			}
-			//if (openset.size() == 0)
-			//	//std::cout << "Couldn't find path." << std::endl;
 		}
 	}
 	return std::vector<SDL_Point>();
