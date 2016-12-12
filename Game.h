@@ -46,7 +46,7 @@ private:
 	
 
 	std::vector<Enemy*> m_enemy;
-	int NUM_OF_ENEMIES = 4;
+	int NUM_OF_ENEMIES = 1;
 
 	//	Camera
 	SDL_Rect m_camera;
