@@ -101,7 +101,7 @@ std::vector<SDL_Point> AStar::search(std::vector<Tile*>* tiles, int startID, int
 				if (m_tileData[neighbour].m_open == false)
 				{
 					// TILE CHECKED
-					neighbour->setTileTypeID(3);
+					//neighbour->setTileTypeID(3);
 					m_tileData[neighbour].m_open = true;
 					openset.push(std::pair<int, int>(m_tileData[neighbour].m_fCost, neighbourIndex));
 				}

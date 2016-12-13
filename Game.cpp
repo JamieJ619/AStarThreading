@@ -10,10 +10,13 @@ Game::Game()
 	: m_running(false),
 	  m_camera{0,0,800,600},
 	  m_wallsPerTile(50),
-	  m_aStar(ROW_SIZE, GRID_SIZE),
-	  m_runAstar(true),
+	  m_aStar(ROW_SIZE_LARGE, GRID_SIZE),
+	  m_runAstar(false),
 	  m_thread_pool(new ThreadPool()),
-	  m_isThreadingEnabled(true)
+	  m_isThreadingEnabled(true),
+	  m_canLoadEnemies(false),
+	  m_loadedEnemies(false),
+	  m_numOfEnemies(0)
 {
 
 }
@@ -30,7 +33,6 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 		if(m_p_Window != 0)
 		{
-			//DEBUG_MSG("Window creation success");
 			m_p_Renderer = SDL_CreateRenderer(m_p_Window, -1, 0);
 			if(m_p_Renderer != 0)
 			{
@@ -59,24 +61,11 @@ bool Game::Initialize(const char* title, int xpos, int ypos, int width, int heig
 
 void Game::LoadContent()
 {
-	m_tileAtlas = TextureLoader::loadTexture("assets/TileAtlas.png", m_p_Renderer);
-	int enemyY = 0;
-	int enemyX = 0;
+	DEBUG_MSG("Input number of enemies: ");
+	std::cin >> m_numOfEnemies;
+	DEBUG_MSG("Press 1 for LARGE map. \nPress 2 for SMALL map. \nPress ENTER to run A*");
 
-	for (int i = 0; i < NUM_OF_ENEMIES; i++)
-	{
-		if (enemyX > GAP_BETWEEN_WALLS)
-		{
-			enemyX = 0;
-			enemyY++;
-		}
-		if (enemyY > 0)
-		{
-			int x = 0;
-		}
-		m_enemy.push_back(new Enemy((ROW_SIZE * TILE_SIZE) - (enemyX + 1) * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
-		enemyX++;
-	}
+	m_tileAtlas = TextureLoader::loadTexture("assets/TileAtlas.png", m_p_Renderer);
 
 	//m_enemy.push_back(new Enemy(75, 250, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 
@@ -86,13 +75,13 @@ void Game::LoadContent()
 
 	for(int i = 0; i < GRID_SIZE; i++)
 	{
-		if (i % ROW_SIZE % m_wallsPerTile == 0 && i % ROW_SIZE != 0 && (y > 0 && y < ROW_SIZE - 1))
+		if (i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y > 0 && y < ROW_SIZE_LARGE - 1))
 		{
 			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
 		}
-		else if(i % ROW_SIZE % m_wallsPerTile == 0 && i % ROW_SIZE != 0 && (y == 0 || y == ROW_SIZE -1))
+		else if(i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y == 0 || y == ROW_SIZE_LARGE -1))
 		{
-			if (i > ROW_SIZE && 2 % count != 0)
+			if (i > ROW_SIZE_LARGE && 2 % count != 0)
 			{
 				count = 1;
 			}
@@ -112,7 +101,7 @@ void Game::LoadContent()
 		}
 
 		x++;
-		if (x == ROW_SIZE)
+		if (x == ROW_SIZE_LARGE)
 		{
 			y++;
 			x = 0;
@@ -127,7 +116,7 @@ void Game::Render()
 
 	// X and Y positions of camera in tiles
 	int x = m_camera.x / TILE_SIZE;
-	int y = (m_camera.y / TILE_SIZE) * ROW_SIZE;
+	int y = (m_camera.y / TILE_SIZE) * ROW_SIZE_LARGE;
 
 	//	Tiles moved across
 	int xCounter = x;
@@ -140,7 +129,7 @@ void Game::Render()
 	{
 		if (xCounter > lastNodeX)
 		{
-			y += ROW_SIZE;
+			y += ROW_SIZE_LARGE;
 			xCounter = x;
 		}
 
@@ -148,18 +137,22 @@ void Game::Render()
 		m_tiles[currNode]->render(m_p_Renderer, temp);
 		xCounter++;
 	}
-	for (int i = 0; i < NUM_OF_ENEMIES; i++)
+
+	if (m_loadedEnemies)
 	{
-		m_enemy[i]->render(m_p_Renderer, temp);
+		for (int i = 0; i < m_numOfEnemies; i++)
+		{
+			m_enemy[i]->render(m_p_Renderer, temp);
+		}
 	}
 	SDL_RenderPresent(m_p_Renderer);
 }
 
 void Game::Update()
 {
-	if (m_runAstar)
+	if (m_runAstar && m_loadedEnemies)
 	{
-		for (int i = 0; i < NUM_OF_ENEMIES; i++)
+		for (int i = 0; i < m_numOfEnemies; i++)
 		{
 			if (m_isThreadingEnabled == true)
 			{
@@ -188,6 +181,19 @@ void Game::HandleEvents()
 				{
 				case SDLK_ESCAPE:
 					m_running = false;
+					break;
+				case SDLK_RETURN:
+					m_runAstar = true;
+					break; 
+				case SDLK_1:
+					m_rowSize = ROW_SIZE_LARGE;
+					LoadEnemies();
+					m_loadedEnemies = true;
+					break;
+				case SDLK_2:
+					m_rowSize = ROW_SIZE_SMALL;
+					LoadEnemies();
+					m_loadedEnemies = true;
 					break;
 				case SDLK_w:
 					if (m_camera.y > 1000)
@@ -229,7 +235,7 @@ void Game::HandleEvents()
 					break;
 				case SDLK_DOWN:
 					DEBUG_MSG("Down Key Pressed");
-					if (m_camera.y < 25000 - 600)
+					if (m_camera.y < (m_rowSize * TILE_SIZE) - 600)
 					{
 						m_camera.y += TILE_SIZE;
 					}
@@ -245,7 +251,7 @@ void Game::HandleEvents()
 					break;
 				case SDLK_RIGHT:
 					DEBUG_MSG("Right Key Pressed");
-					if (m_camera.x < 25000 - 800)
+					if (m_camera.x < (m_rowSize * TILE_SIZE) - 800)
 					{
 						m_camera.x += TILE_SIZE;
 					}
@@ -283,4 +289,26 @@ void Game::ThreadedAStar(int index)
 	m_enemy[index]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[index]->getTileIndex()));
 	/*int x = m_enemy[0]->getTileIndex();
 	m_enemy[0]->setPath(m_aStar.search(&m_tiles, 5, m_enemy[0]->getTileIndex()));*/
+}
+
+void Game::LoadEnemies()
+{
+	int enemyY = 0;
+	int enemyX = 0;
+
+	for (int i = 0; i < m_numOfEnemies; i++)
+	{
+		if (enemyX > GAP_BETWEEN_WALLS)
+		{
+			enemyX = 0;
+			enemyY++;
+		}
+		if (enemyY > 0)
+		{
+			int x = 0;
+		}
+		m_enemy.push_back(new Enemy((m_rowSize * TILE_SIZE) - (enemyX + 1) * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
+		enemyX++;
+	}
+
 }

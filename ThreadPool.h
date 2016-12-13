@@ -13,9 +13,7 @@ class ThreadPool
 {
 public:
 	ThreadPool();
-	~ThreadPool();
 	void AddTask(std::function<void()> newTask);
-	void AwaitCompletion();
 private:
 	std::vector<SDL_Thread*> m_threads;
 	JobQueue m_jobQueue;
