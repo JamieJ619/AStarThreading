@@ -7,6 +7,7 @@
 #include "TextureLoader.h"
 #include "AStar.h"
 #include "Enemy.h"
+#include "ThreadPool.h"
 
 class Game
 {
@@ -22,6 +23,8 @@ public:
 	bool IsRunning();
 	void CleanUp();
 	void Camera();
+	void ThreadedAStar(int index);
+
 private:
 	bool m_running;
 	SDL_Window* m_p_Window;
@@ -39,17 +42,20 @@ private:
 	const int MAX_AREA = 768;
 	std::vector<Tile*> m_tiles;
 	int m_wallsPerTile;
-	const int GAP_BETWEEN_WALLS = 49;
+	const int GAP_BETWEEN_WALLS = 48;
 
 	AStar m_aStar;
 	bool m_runAstar;
 	
 
 	std::vector<Enemy*> m_enemy;
-	int NUM_OF_ENEMIES = 1;
+	int NUM_OF_ENEMIES = 500;
 
 	//	Camera
 	SDL_Rect m_camera;
 	SDL_Texture* m_tileAtlas;
+
+	ThreadPool* m_thread_pool;
+	bool m_isThreadingEnabled;
 };
 #endif

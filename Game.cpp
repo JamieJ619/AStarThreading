@@ -11,7 +11,9 @@ Game::Game()
 	  m_camera{0,0,800,600},
 	  m_wallsPerTile(50),
 	  m_aStar(ROW_SIZE, GRID_SIZE),
-	  m_runAstar(true)
+	  m_runAstar(true),
+	  m_thread_pool(new ThreadPool()),
+	  m_isThreadingEnabled(true)
 {
 
 }
@@ -72,7 +74,7 @@ void Game::LoadContent()
 		{
 			int x = 0;
 		}
-		m_enemy.push_back(new Enemy((ROW_SIZE * TILE_SIZE) - enemyX * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
+		m_enemy.push_back(new Enemy((ROW_SIZE * TILE_SIZE) - (enemyX + 1) * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 		enemyX++;
 	}
 
@@ -159,7 +161,14 @@ void Game::Update()
 	{
 		for (int i = 0; i < NUM_OF_ENEMIES; i++)
 		{
-			m_enemy[i]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[i]->getTileIndex()));
+			if (m_isThreadingEnabled == true)
+			{
+				m_thread_pool->AddTask(std::bind(&Game::ThreadedAStar, this, i));
+			}
+			else
+			{
+				m_enemy[i]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[i]->getTileIndex()));
+			}
 		}
 		m_runAstar = false;
 		/*int x = m_enemy[0]->getTileIndex();
@@ -267,4 +276,11 @@ void Game::CleanUp()
 void Game::Camera()
 {
 
+}
+
+void Game::ThreadedAStar(int index)
+{
+	m_enemy[index]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[index]->getTileIndex()));
+	/*int x = m_enemy[0]->getTileIndex();
+	m_enemy[0]->setPath(m_aStar.search(&m_tiles, 5, m_enemy[0]->getTileIndex()));*/
 }
