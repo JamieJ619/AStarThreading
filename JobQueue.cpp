@@ -37,9 +37,3 @@ std::function<void()> JobQueue::NextTask()
 	SDL_UnlockMutex(m_locked);
 	return nextJob;
 }
-
-bool JobQueue::HasWorkToDo()
-{
-	// IF THERE IS WORK TO DO
-	return m_tasks.size() > 0;
-}

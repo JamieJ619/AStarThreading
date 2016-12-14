@@ -154,16 +154,27 @@ void Game::Update()
 	{
 		for (int i = 0; i < m_numOfEnemies; i++)
 		{
-			if (m_isThreadingEnabled == true)
+			if (m_enemy[i]->getState() == 0 && m_enemy[i]->m_finished != true)
 			{
-				m_thread_pool->AddTask(std::bind(&Game::ThreadedAStar, this, i));
+				if (m_isThreadingEnabled == true)
+				{
+					m_thread_pool->AddTask(std::bind(&Game::ThreadedAStar, this, i));
+				}
+				else
+				{
+					m_enemy[i]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[i]->getTileIndex()));
+				}
+				m_enemy[i]->setState(1);
 			}
-			else
+			else if (m_enemy[i]->getState() == 2)
 			{
-				m_enemy[i]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[i]->getTileIndex()));
+				if (m_enemy[i]->m_finished == false)
+				{
+					m_enemy[i]->update();
+				}
 			}
 		}
-		m_runAstar = false;
+		//m_runAstar = false;
 		/*int x = m_enemy[0]->getTileIndex();
 		m_enemy[0]->setPath(m_aStar.search(&m_tiles, 0, m_enemy[0]->getTileIndex()));*/
 	}
@@ -235,7 +246,7 @@ void Game::HandleEvents()
 					break;
 				case SDLK_DOWN:
 					DEBUG_MSG("Down Key Pressed");
-					if (m_camera.y < (m_rowSize * TILE_SIZE) - 600)
+					if (m_camera.y < (ROW_SIZE_LARGE * TILE_SIZE) - 600)
 					{
 						m_camera.y += TILE_SIZE;
 					}
@@ -287,6 +298,7 @@ void Game::Camera()
 void Game::ThreadedAStar(int index)
 {
 	m_enemy[index]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[index]->getTileIndex()));
+	m_enemy[index]->setState(2);
 	/*int x = m_enemy[0]->getTileIndex();
 	m_enemy[0]->setPath(m_aStar.search(&m_tiles, 5, m_enemy[0]->getTileIndex()));*/
 }
@@ -307,7 +319,8 @@ void Game::LoadEnemies()
 		{
 			int x = 0;
 		}
-		m_enemy.push_back(new Enemy((m_rowSize * TILE_SIZE) - (enemyX + 1) * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
+		m_enemy.push_back(new Enemy((m_rowSize * TILE_SIZE) - (enemyX + 2) * TILE_SIZE, enemyY * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
+		//m_enemy.push_back(new Enemy((5 * TILE_SIZE) , 5 * TILE_SIZE, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 		enemyX++;
 	}
 

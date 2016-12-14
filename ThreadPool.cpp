@@ -3,11 +3,11 @@
 
 int getWork(void * param)
 {
-	std::function<void()> moreWork;
+	std::function<void()> job;
 	JobQueue * jobQueue = (JobQueue*)param;
-	while (moreWork = jobQueue->NextTask())
+	while (job = jobQueue->NextTask())
 	{
-		moreWork();
+		job();
 	}
 	return 0;
 }

@@ -44,7 +44,7 @@ private:
 	const int MAX_AREA = 768;
 	std::vector<Tile*> m_tiles;
 	int m_wallsPerTile;
-	const int GAP_BETWEEN_WALLS = 48;
+	const int GAP_BETWEEN_WALLS = 47;
 
 	AStar m_aStar;
 	bool m_runAstar;
