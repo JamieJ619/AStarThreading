@@ -8,6 +8,7 @@
 #include "AStar.h"
 #include "Enemy.h"
 #include "ThreadPool.h"
+#include "Player.h"
 
 class Game
 {
@@ -49,7 +50,7 @@ private:
 	AStar m_aStar;
 	bool m_runAstar;
 	
-
+	Player m_player;
 	std::vector<Enemy*> m_enemy;
 	int m_numOfEnemies;
 
@@ -63,5 +64,7 @@ private:
 
 	ThreadPool* m_thread_pool;
 	bool m_isThreadingEnabled;
+
+	SDL_mutex* m_locked;
 };
 #endif
