@@ -16,7 +16,8 @@ Game::Game()
 	  m_isThreadingEnabled(true),
 	  m_canLoadEnemies(false),
 	  m_loadedEnemies(false),
-	  m_numOfEnemies(0)
+	  m_numOfEnemies(0),
+	  m_player(50, 0, TILE_SIZE, TILE_SIZE, 5)
 {
 
 }
@@ -66,48 +67,10 @@ void Game::LoadContent()
 	DEBUG_MSG("Press 1 for LARGE map. \nPress 2 for SMALL map. \nPress ENTER to run A*");
 
 	m_tileAtlas = TextureLoader::loadTexture("assets/TileAtlas.png", m_p_Renderer);
-
+	m_player.setTexture(m_tileAtlas);
 	//m_enemy.push_back(new Enemy(75, 250, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 
-	int x = 0;
-	int y = 0;
-	int count = 0;
-
-	for(int i = 0; i < GRID_SIZE; i++)
-	{
-		if (i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y > 0 && y < ROW_SIZE_LARGE - 1))
-		{
-			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
-		}
-		else if(i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y == 0 || y == ROW_SIZE_LARGE -1))
-		{
-			if (i > ROW_SIZE_LARGE && 2 % count != 0)
-			{
-				count = 1;
-			}
-			count++;
-			if (count % 2 == 0)
-			{
-				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
-			}
-			else
-			{
-				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
-			}
-		}
-		else
-		{
-			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
-		}
-
-		x++;
-		if (x == ROW_SIZE_LARGE)
-		{
-			y++;
-			x = 0;
-		}
-		
-	}
+	LoadMap();
 }
 
 void Game::Render()
@@ -144,6 +107,7 @@ void Game::Render()
 		{
 			m_enemy[i]->render(m_p_Renderer, temp);
 		}
+
 	}
 	SDL_RenderPresent(m_p_Renderer);
 }
@@ -297,8 +261,11 @@ void Game::Camera()
 
 void Game::ThreadedAStar(int index)
 {
-	m_enemy[index]->setPath(m_aStar.search(&m_tiles, 2, m_enemy[index]->getTileIndex()));
+	std::vector<SDL_Point> temp = m_aStar.search(&m_tiles, 2, m_enemy[index]->getTileIndex());
+	SDL_LockMutex(m_locked);
+	m_enemy[index]->setPath(temp);
 	m_enemy[index]->setState(2);
+	SDL_UnlockMutex(m_locked);
 	/*int x = m_enemy[0]->getTileIndex();
 	m_enemy[0]->setPath(m_aStar.search(&m_tiles, 5, m_enemy[0]->getTileIndex()));*/
 }
@@ -324,4 +291,48 @@ void Game::LoadEnemies()
 		enemyX++;
 	}
 
+}
+
+void Game::LoadMap()
+{
+
+	int x = 0;
+	int y = 0;
+	int count = 0;
+
+	for (int i = 0; i < GRID_SIZE; i++)
+	{
+		if (i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y > 0 && y < ROW_SIZE_LARGE - 1))
+		{
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
+		}
+		else if (i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y == 0 || y == ROW_SIZE_LARGE - 1))
+		{
+			if (i > ROW_SIZE_LARGE && 2 % count != 0)
+			{
+				count = 1;
+			}
+			count++;
+			if (count % 2 == 0)
+			{
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
+			}
+			else
+			{
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
+			}
+		}
+		else
+		{
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
+		}
+
+		x++;
+		if (x == ROW_SIZE_LARGE)
+		{
+			y++;
+			x = 0;
+		}
+
+	}
 }

@@ -81,6 +81,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="Tile.cpp" />
   </ItemGroup>
@@ -90,6 +91,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="JobQueue.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Tile.h" />

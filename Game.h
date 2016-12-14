@@ -8,6 +8,7 @@
 #include "AStar.h"
 #include "Enemy.h"
 #include "ThreadPool.h"
+#include "Player.h"
 
 class Game
 {
@@ -25,6 +26,7 @@ public:
 	void Camera();
 	void ThreadedAStar(int index);
 	void LoadEnemies();
+	void LoadMap();
 
 private:
 	bool m_running;
@@ -36,6 +38,7 @@ private:
 	SDL_Surface* m_p_Surface;
 
 	//	Grid
+	int m_mapSize;
 	const static int GRID_SIZE = 1000000;
 	const static int ROW_SIZE_LARGE = 1000;
 	const static int ROW_SIZE_SMALL = 100;
@@ -49,13 +52,14 @@ private:
 	AStar m_aStar;
 	bool m_runAstar;
 	
-
+	Player m_player;
 	std::vector<Enemy*> m_enemy;
 	int m_numOfEnemies;
 
 	int m_rowSize;
 	bool m_canLoadEnemies;
 	bool m_loadedEnemies;
+	bool m_loadedMap;
 
 	//	Camera
 	SDL_Rect m_camera;
@@ -63,5 +67,7 @@ private:
 
 	ThreadPool* m_thread_pool;
 	bool m_isThreadingEnabled;
+
+	SDL_mutex* m_locked;
 };
 #endif
