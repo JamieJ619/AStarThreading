@@ -1,7 +1,9 @@
 #include "Enemy.h"
 
 Enemy::Enemy(int p_x, int p_y, int p_width, int p_height, SDL_Texture* p_texture, int p_tileTypeID)
-	: m_tileTypeID(p_tileTypeID)
+	: m_tileTypeID(p_tileTypeID),
+	m_state(0),
+	m_finished(false)
 {
 	m_tileRect = { p_x, p_y, p_width, p_height };
 	m_texture = p_texture;
@@ -23,8 +25,56 @@ void Enemy::setPath(std::vector<SDL_Point> p_path)
 	m_path = p_path;
 }
 
+void Enemy::update()
+{
+	SDL_Point tempPath{ m_path[m_pathIndex].x, m_path[m_pathIndex].y };
+
+	if (tempPath.x == m_tileRect.x && tempPath.y == m_tileRect.y)
+	{
+		if (m_pathIndex < m_path.size() -1)
+		{
+			m_pathIndex++;
+		}
+		else
+		{
+			m_finished = true;
+			m_state = 0;
+		}
+	}
+	if (!m_finished)
+	{
+
+		if (m_tileRect.x > tempPath.x)
+		{
+			m_tileRect.x -= 25;
+		}
+		else if (m_tileRect.x < tempPath.x)
+		{
+			m_tileRect.x += 25;
+		}
+		else if (m_tileRect.y < tempPath.y)
+		{
+			m_tileRect.y += 25;
+		}
+		else if (m_tileRect.y > tempPath.y)
+		{
+			m_tileRect.y -= 25;
+		}
+	}
+}
+
 int Enemy::getTileIndex()
 {
 	m_tileIndex = m_tileRect.x / 25 + (m_tileRect.y / 25) * 1000;
 	return m_tileIndex;
+}
+
+void Enemy::setState(int p_state)
+{
+	m_state = p_state;
+}
+
+int Enemy::getState()
+{
+	return m_state;
 }

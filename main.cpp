@@ -39,6 +39,7 @@ int main(int argc, char** argv){
 
 	game->LoadContent();
 
+
 	while(game->IsRunning())
 	{
 		game->HandleEvents();
