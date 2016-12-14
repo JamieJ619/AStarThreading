@@ -26,6 +26,7 @@ public:
 	void Camera();
 	void ThreadedAStar(int index);
 	void LoadEnemies();
+	void LoadMap();
 
 private:
 	bool m_running;
@@ -37,6 +38,7 @@ private:
 	SDL_Surface* m_p_Surface;
 
 	//	Grid
+	int m_mapSize;
 	const static int GRID_SIZE = 1000000;
 	const static int ROW_SIZE_LARGE = 1000;
 	const static int ROW_SIZE_SMALL = 100;
@@ -57,6 +59,7 @@ private:
 	int m_rowSize;
 	bool m_canLoadEnemies;
 	bool m_loadedEnemies;
+	bool m_loadedMap;
 
 	//	Camera
 	SDL_Rect m_camera;

@@ -70,46 +70,7 @@ void Game::LoadContent()
 	m_player.setTexture(m_tileAtlas);
 	//m_enemy.push_back(new Enemy(75, 250, TILE_SIZE, TILE_SIZE, m_tileAtlas, 4));
 
-
-	int x = 0;
-	int y = 0;
-	int count = 0;
-
-	for(int i = 0; i < GRID_SIZE; i++)
-	{
-		if (i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y > 0 && y < ROW_SIZE_LARGE - 1))
-		{
-			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
-		}
-		else if(i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y == 0 || y == ROW_SIZE_LARGE -1))
-		{
-			if (i > ROW_SIZE_LARGE && 2 % count != 0)
-			{
-				count = 1;
-			}
-			count++;
-			if (count % 2 == 0)
-			{
-				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
-			}
-			else
-			{
-				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
-			}
-		}
-		else
-		{
-			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
-		}
-
-		x++;
-		if (x == ROW_SIZE_LARGE)
-		{
-			y++;
-			x = 0;
-		}
-		
-	}
+	LoadMap();
 }
 
 void Game::Render()
@@ -142,7 +103,6 @@ void Game::Render()
 
 	if (m_loadedEnemies)
 	{
-		m_player.render(m_p_Renderer, temp);
 		for (int i = 0; i < m_numOfEnemies; i++)
 		{
 			m_enemy[i]->render(m_p_Renderer, temp);
@@ -331,4 +291,48 @@ void Game::LoadEnemies()
 		enemyX++;
 	}
 
+}
+
+void Game::LoadMap()
+{
+
+	int x = 0;
+	int y = 0;
+	int count = 0;
+
+	for (int i = 0; i < GRID_SIZE; i++)
+	{
+		if (i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y > 0 && y < ROW_SIZE_LARGE - 1))
+		{
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
+		}
+		else if (i % ROW_SIZE_LARGE % m_wallsPerTile == 0 && i % ROW_SIZE_LARGE != 0 && (y == 0 || y == ROW_SIZE_LARGE - 1))
+		{
+			if (i > ROW_SIZE_LARGE && 2 % count != 0)
+			{
+				count = 1;
+			}
+			count++;
+			if (count % 2 == 0)
+			{
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
+			}
+			else
+			{
+				m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, true, 1));
+			}
+		}
+		else
+		{
+			m_tiles.push_back(new Tile(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, i, m_tileAtlas, false, 0));
+		}
+
+		x++;
+		if (x == ROW_SIZE_LARGE)
+		{
+			y++;
+			x = 0;
+		}
+
+	}
 }
