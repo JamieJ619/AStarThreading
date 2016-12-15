@@ -5,7 +5,8 @@
 #include "Game.h"
 #include <thread>
 #include <string>
-
+#pragma comment(lib,"SDL2.lib") 
+#pragma comment(lib, "SDL2_image.lib")
 using namespace std;
 
 //	Jamie Jackson - C00182414 - Date Modified: 

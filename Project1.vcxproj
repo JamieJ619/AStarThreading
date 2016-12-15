@@ -46,15 +46,20 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Jamie\Downloads\SDL2-2.0.4\include;C:\Users\Jamie\Downloads\SDL2_image-devel-2.0.1-VC\SDL2_image-2.0.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)dependencies\SDL2_image-2.0.1\include;$(ProjectDir)dependencies\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Jamie\Downloads\SDL2-2.0.4\lib\x86;C:\Users\Jamie\Downloads\SDL2_image-devel-2.0.1-VC\SDL2_image-2.0.1\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)dependencies\SDL2_image-2.0.1\lib\x86;$(ProjectDir)dependencies\SDL\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib; SDL2_image.lib</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "$(ProjectDir)dependencies\SDL\lib\x86\SDL2.dll" "$(TargetDir)"
+copy "$(ProjectDir)dependencies\SDL2_image-2.0.1\lib\x86\*.dll" "$(TargetDir)"
+echo D|xcopy /E /Y "$(ProjectDir)assets" "$(TargetDir)assets"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -63,17 +68,22 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Jamie\Downloads\SDL2-2.0.4\include;C:\Users\Jamie\Downloads\SDL2_image-devel-2.0.1-VC\SDL2_image-2.0.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)dependencies\SDL2_image-2.0.1\include;$(ProjectDir)dependencies\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Users\Jamie\Downloads\SDL2-2.0.4\lib\x86;C:\Users\Jamie\Downloads\SDL2_image-devel-2.0.1-VC\SDL2_image-2.0.1\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)dependencies\SDL2_image-2.0.1\lib\x86;$(ProjectDir)dependencies\SDL\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib; SDL2_image.lib</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "$(ProjectDir)dependencies\SDL\lib\x86\SDL2.dll" "$(TargetDir)"
+copy "$(ProjectDir)dependencies\SDL2_image-2.0.1\lib\x86\*.dll" "$(TargetDir)"
+echo D|xcopy /E /Y "$(ProjectDir)assets" "$(TargetDir)assets"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AStar.cpp" />
